@@ -1,0 +1,32 @@
+version: "3.3"
+services:
+  db:
+    image: postgres:latest
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: 2051Enr
+      POSTGRES_DB: books
+    networks:
+      - default
+    volumes:
+      - dbvolume:/var/lib/postgresql/data/
+  api:
+    build: .
+    restart: on-failure
+    command: >
+      /bin/bash -c "python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - db
+    working_dir: /home/booksproject
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/home/booksproject
+    tty: true
+    networks:
+      - default
+volumes:
+  dbvolume:
